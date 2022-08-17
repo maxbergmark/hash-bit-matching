@@ -6,7 +6,6 @@ import math
 import time
 import os
 
-
 from pollard_rho import PollardRhoController
 from verifier import Verifier
 

@@ -38,7 +38,7 @@ class HashConfig(yaml.YAMLObject):
 	def calculate_distinguish_bits(self):
 		total_hashes = 2**(self.search_bits / 2)
 		d_bits = math.log2(total_hashes / 2**self.index_bits)
-		self.distinguish_bits = math.ceil(d_bits) + 2 + 0
+		self.distinguish_bits = math.ceil(d_bits) + 2 + 2
 		print(f"    Distinguish bits: {self.distinguish_bits}")
 
 

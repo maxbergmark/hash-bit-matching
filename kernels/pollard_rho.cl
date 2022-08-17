@@ -37,15 +37,10 @@ void add_distinguished_point(
 	for (int j = 0; j < ceilDiv((*original_input).length, 4); j++) {
 		dp.inbuffer.buffer[j] = (*original_input).buffer[j];
 	}
-	// if (original_input->buffer[0] == 0x61616161) {
-		// printf("point added: %.12s\n", (char*) original_input->buffer);
-	// }
 	dp.inbuffer.length = (*original_input).length;
-	// dp.inbuffer = *original_input;
 	for (int j = 0; j < 8; j++) {
 		dp.outbuffer.buffer[j] = (*outbuffer).buffer[j];		
 	}
-	// dp.outbuffer = *outbuffer;
 
 	distinguished_points[idx] = dp;
 }
@@ -92,11 +87,7 @@ __kernel void pollard_rho_check(
 		print_hash_input(inbuffer);
 	}
 
-
 	for (int j = 0; j + 1*chain_start < limit; j++) {
-		// if (idx == 0) {
-			// printf("j: %d %d %d\n", j, chain_start, limit);
-		// }
 		hash_private(inbuffer.buffer, inbuffer.length, outbuffer.buffer);
 		total_hashes++;
 		checksum ^= outbuffer.buffer[0];
@@ -144,8 +135,6 @@ __kernel void pollard_rho_effective(
 	__private outbuf outbuffer;
 	const uint distinguish_filter = SWAP(0xFFFFFFFF ^ (
 		(1U << (32 - distinguish_bits)) - 1));
-	const int idx_check = 0;
-	// uint checksum = 0;
 	const char tokens[16] = "MAXBERGKmaxbergk";
 	int last_chain_start = 0;
 
@@ -160,21 +149,9 @@ __kernel void pollard_rho_effective(
 
 	for (int i = 0; i < limit; i++) {
 		hash_private(inbuffer.buffer, inbuffer.length, outbuffer.buffer);
-		// private_stats.chain_index++;
-		// checksum ^= outbuffer.buffer[0];
 		
 		if ((outbuffer.buffer[0] & distinguish_filter) == 0) {
-		// if (original_input.buffer[0] == 0x61616161
-			// && original_input.buffer[1] == 0x61616161
-			// && original_input.buffer[2] == SWAP(0x64686b6e)) {
-			// printf("found match! %08x%08x%08x (%ld, %d)\n", 
-				// SWAP(outbuffer.buffer[0]),
-				// SWAP(outbuffer.buffer[1]),
-				// SWAP(outbuffer.buffer[2]),
-				// private_stats.chain_index, i
-			// );
-		// }
-			// printf("Adding point\n");
+
 			add_distinguished_point(distinguished_points, d_point_index, 
 				&outbuffer, &original_input, private_stats.chain_index, i);
 			private_stats.start_index++;
@@ -185,16 +162,12 @@ __kernel void pollard_rho_effective(
 				idx, private_stats.start_index);
 
 		} else {
-			// copy_n_bits(&inbuffer, &outbuffer, search_bits);
-			copy_n_bits_transformed(&inbuffer, &outbuffer, tokens, search_bits);
+			copy_n_bits(&inbuffer, &outbuffer, search_bits);
+			// copy_n_bits_transformed(&inbuffer, &outbuffer, tokens, search_bits);
 		}
-		// copy_n_bits(&inbuffer, &outbuffer, search_bits);
 		
 	}
-	// for (int i = 0; i < 3; i++) {
-	// 	private_stats.current_hash.buffer[i] = inbuffer.buffer[i];
-	// 	private_stats.original_input.buffer[i] = original_input.buffer[i];		
-	// }
+
 	private_stats.current_hash = inbuffer;
 	private_stats.original_input = original_input;		
 	private_stats.total_hashes += limit;
@@ -204,7 +177,7 @@ __kernel void pollard_rho_effective(
 
 __kernel void verify(__global dp_data* points, 
 	int distinguish_bits, int search_bits) {
-	// int distinguish_bits = 14;
+
 	const uint distinguish_filter = SWAP(0xFFFFFFFF ^ (
 		(1U << (32 - distinguish_bits)) - 1));
 	const char tokens[16] = "MAXBERGKmaxbergk";
@@ -217,18 +190,17 @@ __kernel void verify(__global dp_data* points,
 	__private outbuf o1;
 	int offset0 = dp0.offset;
 	int offset1 = dp1.offset;
-	print_hash_input(i0);
-	print_hash_input(i1);
+
 	for (int i = 0; i < max(0, offset0 - offset1); i++) {
 		hash_private(i0.buffer, i0.length, o0.buffer);
-		copy_n_bits_transformed(&i0, &o0, tokens, search_bits);
-		// copy_n_bits(&i0, &o0, search_bits);
+		// copy_n_bits_transformed(&i0, &o0, tokens, search_bits);
+		copy_n_bits(&i0, &o0, search_bits);
 	}
 
 	for (int i = 0; i < max(0, offset1 - offset0); i++) {
 		hash_private(i1.buffer, i1.length, o1.buffer);
-		copy_n_bits_transformed(&i1, &o1, tokens, search_bits);
-		// copy_n_bits(&i1, &o1, search_bits);
+		// copy_n_bits_transformed(&i1, &o1, tokens, search_bits);
+		copy_n_bits(&i1, &o1, search_bits);
 	}
 
 	for (int i = 0; i < min(offset0, offset1); i++) {
@@ -238,15 +210,15 @@ __kernel void verify(__global dp_data* points,
 		if (o0.buffer[0] == o1.buffer[0]) {
 			printf("Found match:\n    ");
 			for (int j = 0; j < ceilDiv(i0.length, 4); j++) {
-				// printf("%08x", SWAP(i0.buffer[j]));
-				printf("%.4s", (char*) &i0.buffer[j]);
+				printf("%08x", SWAP(i0.buffer[j]));
+				// printf("%.4s", (char*) &i0.buffer[j]);
 			}
 			printf(" (%d) -> ", i0.length);
 			print_hash(o0);
 			printf("    ");
 			for (int j = 0; j < ceilDiv(i1.length, 4); j++) {
-				// printf("%08x", SWAP(i1.buffer[j]));
-				printf("%.4s", (char*) &i1.buffer[j]);
+				printf("%08x", SWAP(i1.buffer[j]));
+				// printf("%.4s", (char*) &i1.buffer[j]);
 			}
 			printf(" (%d) -> ", i1.length);
 			print_hash(o0);
@@ -255,14 +227,10 @@ __kernel void verify(__global dp_data* points,
 
 		}
 
-		// copy_n_bits(&i0, &o0, search_bits);
-		// copy_n_bits(&i1, &o1, search_bits);
-
-		copy_n_bits_transformed(&i0, &o0, tokens, search_bits);
-		copy_n_bits_transformed(&i1, &o1, tokens, search_bits);
-		// print_hash(o0);
-		// print_hash(o1);
-		// printf("\n");
+		copy_n_bits(&i0, &o0, search_bits);
+		copy_n_bits(&i1, &o1, search_bits);
+		// copy_n_bits_transformed(&i0, &o0, tokens, search_bits);
+		// copy_n_bits_transformed(&i1, &o1, tokens, search_bits);
 	}
 	printf("\n");
 }

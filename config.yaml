@@ -1,6 +1,6 @@
 !HashConfig
 threads_exp: 14
 index_bits: 20
-search_bits: 80
-load_file: true
-thread_limit_exp: 12
+search_bits: 72
+load_file: false
+thread_limit_exp: 14

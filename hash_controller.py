@@ -15,10 +15,5 @@ class HashController:
 		self.program = cl.Program(self.ctx, 
 			open("kernels/pollard_rho.cl", "r").read()).build()
 
-		self.threads = 2**14
-		self.loops = 2**19
-		self.bits = 28
-
-
 	def get_hash_str(self, byte_array):
 		return self.get_hash(byte_array).hex()
