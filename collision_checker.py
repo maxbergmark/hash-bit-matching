@@ -54,4 +54,4 @@ class CollisionChecker:
 			np.int32(self.config.distinguish_bits),
 			np.int32(self.config.search_bits)
 		)
-		quit()
+		# quit()

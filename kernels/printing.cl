@@ -28,6 +28,30 @@ void print_hash(outbuf outbuffer) {
 	);
 }
 
+void print_hash_match(outbuf outbuffer, int matching_bits) {
+	const char OKGREEN[] = "\033[92m";
+	const char YELLOW[] = "\033[93m";
+	const char ENDC[] = "\033[0m";
+	// printf("test\n");
+	printf("%s", OKGREEN);
+	for (int i = 0; i < 8; i++) {
+		int n = outbuffer.buffer[i];
+		for (int j = 0; j < 4; j++) {
+			if (matching_bits < 8) {
+				// printf("%s", ENDC);
+				printf("%s", YELLOW);
+			}
+			if (matching_bits <= 0) {
+				printf("%s", ENDC);
+			}
+			printf("%02x", n & 0xff);
+			n >>= 8;
+			matching_bits -= 8;
+		}
+	}
+	printf("\n");
+}
+
 void print_hash_input_word(inbuf inbuffer) {
 	char* c0 = (char*) &inbuffer.buffer[0];
 	printf("%.12s\n", 

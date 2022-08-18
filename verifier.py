@@ -80,7 +80,8 @@ class Verifier:
 		# self.verify("aaadaaabdape", 466419, "aaakaaaadjgl", 134734, 72)
 		# self.verify("aaakaaabclgj", 288819, "aaaeaaabajdb", 285067, 72)
 		# self.verify("aaabaaacbdoh", 686604, "aaacaaacdjkp", 130447, 72)
-		self.verify("aaaoaaaaddpj", 12361024, "aaaaaaaadhkn", 10783172+1, 80)
+		# self.verify("aaaoaaaaddpj", 12361024, "aaaaaaaadhkn", 10783172+1, 80)
+		self.verify("aaadaaaadfbj", 93, "aaaaaaaacbkp", 9, 40)
 
 		return
 		self.verify("ahbhaakcdejo", 2226,

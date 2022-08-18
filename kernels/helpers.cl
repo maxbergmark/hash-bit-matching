@@ -43,9 +43,13 @@ void copy_n_bits_transformed(__private inbuf* inbuffer, __private const outbuf* 
 //	const char tokens[16] = "MAXBERGKmaxbergk";
 //	char ct[4];
 //	int idx = 0;
-	inbuffer->length = ceilDiv(bits, 4);
+	inbuffer->length = ceilDiv(bits, 4) + 4;
 	unsigned char* frombuf = (unsigned char*) outbuffer->buffer;
 	char* tobuf = (unsigned char*) inbuffer->buffer;
+	*tobuf++ = 'm';
+	*tobuf++ = 'a';
+	*tobuf++ = 'x';
+	*tobuf++ = '_';
 
 	while (bits >= 8) {
 		*tobuf++ = tokens[(*frombuf>>4) & 0xF];
@@ -59,6 +63,23 @@ bool hash_equal(distinguished_point* private_point, outbuf* outbuffer) {
 		& private_point->half_hash[1] == outbuffer->buffer[1]
 		& private_point->half_hash[2] == outbuffer->buffer[2]
 		& private_point->half_hash[3] == outbuffer->buffer[3];
+}
+
+int get_matching_bits(outbuf o0, outbuf o1) {
+	int matching = 0;
+	for (int i = 0; i < 8; i++) {
+		int s0 = SWAP(o0.buffer[i]);
+		int s1 = SWAP(o1.buffer[i]);
+		for (int j = 31; j >= 0; j--) {
+			int mask = 1 << j;
+			if ((s0 & mask) == (s1 & mask)) {
+				matching++;
+			} else {
+				return matching;
+			}
+		}
+	}
+	return 0;
 }
 
 void save_private_point(distinguished_point private_point, outbuf outbuffer, inbuf original_input, 

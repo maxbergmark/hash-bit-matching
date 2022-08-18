@@ -1,5 +1,29 @@
 # Hash Bit Matching
 
+This project was made as a personal project to find partial hash collisions in SHA256. The goal was to find two different inputs whose hashes match as well as possible, i.e. the most bits matching. 
+
+The algorithm used is a modified Pollard Rho attack with distinguished points, an attack that is commonly used in parallel architectures to find hash collision. It is implemented using PyOpenCL to leverage GPU hashing.
+
+## Algorithm modification
+
+The Pollard Rho algorithm with distinguished points can be described as follows:
+
+1. Pick a random starting point (hash input) $`x_0`$
+2. Keep repeating $`x_n = H(x_{n-1})`$ until $`x_n`$ is a distinguished hash
+3. Save the distinguished hash, along with metadata including the original input $`x_0`$ and the number of steps $`n`$
+4. Keep repeating steps 1-3 for different random starting points until the same distinguished hash output is found twice
+
+To learn more about it, read [this paper](http://www.cs.csi.cuny.edu/~zhangx/papers/P_2018_LISAT_Weber_Zhang.pdf) describing the article in depth. 
+
+The Pollard Rho attack is commonly used to find hash collisions. It is not directly suited to find partial hash collsions, since the birthday attack only works for full hash collisions. But if we want to find a hash collision of $`b`$ bits, step 2 above can be changed to repeating $`x_n = H(x_{n-1}[:b])`$, i.e. only copy the first b bits of $`x_{n-1}`$ in each step. 
+
+In general, any injective function using the first $`b`$ bits of each hash can be used: $`x_n = H(f_b(x_{n-1})`$, where `f_b` is some injective function that preserves the first $`b`$ bits of its input. As an example, here are two inputs with 80 matching bits, using an injective function that prefixes the input with the string `max_` and creates a hex string using the charset `"maxbergkMAXBERGK"`:
+
+```
+Matching bits: 80
+    max_GrAMgBaegrrBGEmgaBEx (24) -> d0f61808cede4f7720f9e9631a6e0a66f69914d5b11eb3968e55122b2e2b70c2
+    max_gkKRMmEXXeERGGBbKbEX (24) -> d0f61808cede4f7720f940ccbfe0e131dfb2a7a743ec2e5f97620a8e0a643c56
+```
 
 ## Examples
 
@@ -21,3 +45,18 @@ Matching bits: 101
 	95495df9020f2b57f2a1aaede0 -> f41b6824d3f9494b4dffd633934a50214e1ee2c1b427acbce4ecb21adcfa9997
 	ce0e7ea4def8987ae249129ee0 -> f41b6824d3f9494b4dffd633953dc499bc438e9691318fceab6cb823abc51fbd
 ```
+
+## Stats
+
+Generating matches longer than 100 bits require a lot of calculation. The output below is from an older version of the program, for the 101 bit match above. 
+
+    Kernel executions: 535
+    Hashes: 1.47e+15
+    Hash volume: 41.797PB
+    Hash efficiency: 76.787%
+    Time:  8d 23h 11m 51.2s
+    Speed: 1898.25MHz
+    Total distinguished points: 8.77e+07
+    Distinguished points: 7.48e+07
+    Maximum expected bits: 99.54
+    Current probability: 39.53%
