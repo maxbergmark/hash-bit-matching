@@ -8,16 +8,18 @@ The algorithm used is a modified Pollard Rho attack with distinguished points, a
 
 The Pollard Rho algorithm with distinguished points can be described as follows:
 
-1. Pick a random starting point (hash input) $`x_0`$
-2. Keep repeating $`x_n = H(x_{n-1})`$ until $`x_n`$ is a distinguished hash
-3. Save the distinguished hash, along with metadata including the original input $`x_0`$ and the number of steps $`n`$
+1. Pick a random starting point (hash input) $x_0$
+2. Keep repeating $x_n = H(x_{n-1})$ until $x_n$ is a distinguished hash
+3. Save the distinguished hash, along with metadata including the original input $x_0$ and the number of steps $n$
 4. Keep repeating steps 1-3 for different random starting points until the same distinguished hash output is found twice
 
 To learn more about it, read [this paper](http://www.cs.csi.cuny.edu/~zhangx/papers/P_2018_LISAT_Weber_Zhang.pdf) describing the article in depth. 
 
-The Pollard Rho attack is commonly used to find hash collisions. It is not directly suited to find partial hash collsions, since the birthday attack only works for full hash collisions. But if we want to find a hash collision of $`b`$ bits, step 2 above can be changed to repeating $`x_n = H(x_{n-1}[:b])`$, i.e. only copy the first b bits of $`x_{n-1}`$ in each step. 
+The Pollard Rho attack is commonly used to find hash collisions. It is not directly suited to find partial hash collsions, since the birthday attack only works for full hash collisions. But if we want to find a hash collision of $b$ bits, step 2 above can be changed to repeating $x_n = H(x_{n-1}[:b])$, i.e. only copy the first $b$ bits of $x_{n-1}$ in each step. The copy step is simpler if $b$ is a multiple of 8, since we can copy the bytes directly. However, the copy step works for any value of $b$ if the remaining bits in the last byte are set to zero during copying.  
 
-In general, any injective function using the first $`b`$ bits of each hash can be used: $`x_n = H(f_b(x_{n-1})`$, where `f_b` is some injective function that preserves the first $`b`$ bits of its input. As an example, here are two inputs with 80 matching bits, using an injective function that prefixes the input with the string `max_` and creates a hex string using the charset `"maxbergkMAXBERGK"`:
+### Generalized mappings
+
+In general, any injective function using the first $b$ bits of each hash can be used: $x_n = H(f_b(x_{n-1})$, where $f_b$ is some injective function that preserves the first $b$ bits of its input. As an example, here are two inputs with 80 matching bits, using an injective function that prefixes the input with the string `max_` and creates a hex string using the charset `"maxbergkMAXBERGK"`:
 
 ```
 Matching bits: 80
