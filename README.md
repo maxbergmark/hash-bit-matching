@@ -21,13 +21,13 @@ In general, any injective function using the first $`b`$ bits of each hash can b
 
 ```
 Matching bits: 80
-    max_GrAMgBaegrrBGEmgaBEx (24) -> d0f61808cede4f7720f9e9631a6e0a66f69914d5b11eb3968e55122b2e2b70c2
-    max_gkKRMmEXXeERGGBbKbEX (24) -> d0f61808cede4f7720f940ccbfe0e131dfb2a7a743ec2e5f97620a8e0a643c56
+    max_GrAMgBaegrrBGEmgaBEx -> d0f61808cede4f7720f9e9631a6e0a66f69914d5b11eb3968e55122b2e2b70c2
+    max_gkKRMmEXXeERGGBbKbEX -> d0f61808cede4f7720f940ccbfe0e131dfb2a7a743ec2e5f97620a8e0a643c56
 ```
 
 ## Examples
 
-All example inputs are hex encoded binary data. They can be verifier using [this tool](https://emn178.github.io/online-tools/sha256.html).
+All example inputs are hex encoded binary data. They can be verified using [this tool](https://emn178.github.io/online-tools/sha256.html).
 ```
 Matching bits: 79
 	312f40e65925903a9be0 -> 557672f5ed89037fe4c3e511592eb8a67aba132f3b6f466adb1970840858b477
